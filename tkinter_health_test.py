@@ -59,7 +59,8 @@ class HealthTest(Frame):
         self.count = 0
         self.results = []
         self.press_amounts = 0
-        self.press_amountz = {}
+        self.press_amounts_dict = {}
+        self.flag = False #переменная чтобы фиксировать кол-во нажатий на времени % 5 == 0 только один раз
 
     def initUI(self):
         self.test_circles = Button(self, text='Тест Точность', command=self.circles, width=16)
@@ -127,6 +128,7 @@ class HealthTest(Frame):
 
     def refresh_button(self):
         self.results = []
+        self.press_amounts_dict = {}
 
     def tapping(self):
         self.tapping_test = Toplevel(self)
@@ -162,40 +164,46 @@ class HealthTest(Frame):
         start_test = round(start_test_accurate, 1)
         self.timer_label.config(text=start_test, font='times 25')
         self.timer_label.after(1, self.tapping_engine)
-        if start_test_accurate == 5:
-            self.press_amountz['1'] = self.press_amounts
-            print(self.press_amountz)
+        if 5 < start_test_accurate < 5.5 and self.flag == False:
+            self.flag = True #переменная чтобы фиксировать кол-во нажатий только один раз
+            self.press_amounts_dict['1'] = self.press_amounts
+            print(self.press_amounts_dict)
             self.press_amounts = 0
-        if start_test_accurate == 10:
-            self.press_amountz['2'] = self.press_amounts
-            print(self.press_amountz)
+        if 10 < start_test_accurate < 10.5 and self.flag == True:
+            self.flag = False
+            self.press_amounts_dict['2'] = self.press_amounts
+            print(self.press_amounts_dict)
             self.press_amounts = 0
-        if start_test_accurate == 15:
-            self.press_amountz['3'] = self.press_amounts
-            print(self.press_amountz)
+        if 15 < start_test_accurate < 15.5 and self.flag == False:
+            self.flag = True
+            self.press_amounts_dict['3'] = self.press_amounts
+            print(self.press_amounts_dict)
             self.press_amounts = 0
-        if start_test_accurate == 20:
-            self.press_amountz['4'] = self.press_amounts
-            print(self.press_amountz)
+        if 20 < start_test_accurate < 20.5 and self.flag == True:
+            self.flag = False
+            self.press_amounts_dict['4'] = self.press_amounts
+            print(self.press_amounts_dict)
             self.press_amounts = 0
-        if start_test_accurate == 25:
-            self.press_amountz['5'] = self.press_amounts
-            print(self.press_amountz)
+        if 25 < start_test_accurate < 25.5 and self.flag == False:
+            self.flag = True
+            self.press_amounts_dict['5'] = self.press_amounts
+            print(self.press_amounts_dict)
             self.press_amounts = 0
-        if start_test_accurate == 30:
-            self.press_amountz['6'] = self.press_amounts
-            print(self.press_amountz)
+        if 30 < start_test_accurate < 30.1 and self.flag == True:
+            self.flag = False
+            self.press_amounts_dict['6'] = self.press_amounts
+            print(self.press_amounts_dict)
             self.press_amounts = 0
-        if start_test_accurate >= 30:
+        if start_test_accurate >= 30.2:
             print('тэппинг тест пройден')
-            print(self.press_amountz)
+            print(self.press_amounts_dict)
             self.timer_window.destroy()
             self.stats_tapping_window = Toplevel(self.tapping_test)
             self.stats_tapping_window.title('Результаты тэппинг-теста')
             # self.stats_frame = Frame(self.stats_window)
             x = [i for i in range(6)]
-            y = [self.press_amountz['1'],self.press_amountz['2'],self.press_amountz['3'],
-                 self.press_amountz['4'],self.press_amountz['5'],self.press_amountz['6']]
+            y = [self.press_amounts_dict['1'], self.press_amounts_dict['2'], self.press_amounts_dict['3'],
+                 self.press_amounts_dict['4'], self.press_amounts_dict['5'], self.press_amounts_dict['6']]
             self.stats_tapping = Figure(figsize=(10, 10), dpi=100)
             fn = self.stats_tapping.add_subplot(1, 1, 1)
             try:
