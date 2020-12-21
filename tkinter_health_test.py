@@ -209,7 +209,6 @@ class HealthTest(Frame):
                 self.tapping_test.destroy()
                 print('Ошибка, нажмите обновить чтобы сбросить значения предыдущего теста')
 
-
     def instruction(self):
         help_texts = 'Тест на точность\n' \
                      'Тест запускается при нажатии на SPACE\n' \
