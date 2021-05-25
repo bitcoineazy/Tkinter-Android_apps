@@ -4,7 +4,6 @@ import math
 
 HEIGHT = 500
 WIDTH = 500
-points = [0, HEIGHT, WIDTH/2, 0, WIDTH, HEIGHT]
 
 
 class Figure:
