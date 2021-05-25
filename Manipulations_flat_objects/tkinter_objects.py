@@ -14,9 +14,11 @@ class Figure:
         self.rectangles = []
         self.triangles = []
         self.hexagons = []
+        self.ovals = []
         self.rectangles_generated = False
         self.triangles_generated = False
         self.hexagons_generated = False
+        self.ovals_generated = False
 
     def create_rectangles(self):
         while not self.rectangles_generated:
@@ -61,11 +63,52 @@ class Figure:
                 ))
             self.hexagons_generated = True
         for each in self.hexagons:
-            if self.hexagons.index(each) // 3 :
-                self.canvas.itemconfigure(each, rotation=30)
+            #if self.hexagons.index(each) // 3 :
+            #    self.canvas.itemconfigure(each, fill='blue')
             self.canvas.move(each, 10, 0)
             #self.canvas.move(each, -10, 3)
         self.canvas.after(10, self.create_hexagons)
+
+    def create_ovals(self):
+        while not self.ovals_generated:
+            for i in range(1000):
+                self.ovals.append(self.canvas.create_polygon(
+                    self.get_oval_coords(self.x1 + (i*60), self.y1, self.x2 + (i*60), self.y2)
+                ))
+                self.ovals.append(self.canvas.create_polygon(
+                    self.get_oval_coords(self.x1 - (i*60), self.y1, self.x2 - (i*60), self.y2)
+                ))
+            self.ovals_generated = True
+
+
+    def get_oval_coords(self, x1, y1, x2, y2):
+        steps = 20
+        rotation = 30
+        rotation = rotation * math.pi / 180.0
+
+        # major and minor axes
+        a = (x2 - x1) / 2.0
+        b = (y2 - y1) / 2.0
+
+        # center
+        xc = x1 + a
+        yc = y1 + b
+
+        point_list = []
+        for i in range(steps):
+            theta = (math.pi * 2) * (float(i) / steps)
+
+            x1 = a * math.cos(theta)
+            y1 = b * math.sin(theta)
+
+            # rotate x, y
+            x = (x1 * math.cos(rotation)) + (y1 * math.sin(rotation))
+            y = (y1 * math.cos(rotation)) - (x1 * math.sin(rotation))
+
+            point_list.append(round(x + xc))
+            point_list.append(round(y + yc))
+
+        return point_list
 
 
 class Objects(Frame):
@@ -89,10 +132,12 @@ class Objects(Frame):
         self.canvas_area.grid(row=0, column=0)
         triangles = Button(self, text='gen_triangles()', command=self.gen_triangle, width=16)
         hexagons = Button(self, text='gen_hexagons()', command=self.gen_hexagon, width=16)
+        ovals = Button(self, text='gen_ovals()', command=self.gen_oval, width=16)
         rotating = Button(self, text='rotate()', command=self.rotate, width=16)
         triangles.grid(row=0, column=2)
         hexagons.grid(row=0, column=3)
         rotating.grid(row=1, column=0)
+        ovals.grid(row=0, column=4)
         self.rotating_angle.grid(row=2, column=0)
 
     def make_canvas(self):
@@ -117,18 +162,20 @@ class Objects(Frame):
                                    x4=265, y4=276, x5=235, y5=276, x6=220, y6=250)
         self.all_hexagons.create_hexagons()
 
+    def gen_oval(self):
+        self.all_ovals = Figure(self.canvas, x1=250, y1=250, x2=290, y2=290)
+        self.all_ovals.create_ovals()
+
     def rotate(self):
         all_figures = self.canvas.find_all()
+        all_bboxes
         self.angle += int(self.rotating_angle.get())
-        points[4] = 0.5 * WIDTH + 0.5 * WIDTH * math.cos(self.angle)
-        points[0] = (WIDTH - (points[4] - 0.5 * WIDTH) * 2) / 2
-        for each in all_figures:
-            self.canvas.coords(each, points)
+        #for each in all_figures
         self.canvas.after(500, self.rotate)
 
 
     def centerWindow(self):
-        w = 660
+        w = 880
         h = 96
         sw = self.parent.winfo_screenwidth()
         sh = self.parent.winfo_screenheight()
