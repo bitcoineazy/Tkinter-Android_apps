@@ -1,4 +1,10 @@
 from tkinter import *
+import math
+
+
+HEIGHT = 500
+WIDTH = 500
+points = [0, HEIGHT, WIDTH/2, 0, WIDTH, HEIGHT]
 
 
 class Figure:
@@ -20,9 +26,9 @@ class Figure:
                 self.rectangles.append(self.canvas.create_rectangle(
                     self.x1 - (i*40), self.y1, self.x2 - (i*40), self.y2, fill='black'))
             self.rectangles_generated = True
-        #for each in self.rectangles:
-        #    self.canvas.move(each, -1, 0)
-        #self.canvas.after(10, self.create_rectangles)
+        for each in self.rectangles:
+            self.canvas.move(each, -1, 0)
+        self.canvas.after(10, self.create_rectangles)
 
 
     def create_triangles(self):
@@ -42,6 +48,8 @@ class Figure:
 
     def create_hexagons(self):
         while not self.hexagons_generated:
+            all_hexs = self.canvas.find_all()
+            #print(self.canvas.itemcget(all_hexs[0], 'offset'))
             for i in range(1000):
                 self.hexagons.append(self.canvas.create_polygon(
                     self.x4 + (i*80), self.y4, self.x5  + (i*80), self.y5, self.x6  + (i*80), self.y6,
@@ -53,9 +61,10 @@ class Figure:
                 ))
             self.hexagons_generated = True
         for each in self.hexagons:
-            self.canvas.move(each, 10, -3)
-
-                #self.canvas.move(each, -10, 3)
+            if self.hexagons.index(each) // 3 :
+                self.canvas.itemconfigure(each, rotation=30)
+            self.canvas.move(each, 10, 0)
+            #self.canvas.move(each, -10, 3)
         self.canvas.after(10, self.create_hexagons)
 
 
@@ -67,7 +76,7 @@ class Objects(Frame):
         self.pack(fill=BOTH, expand=1)
         self.centerWindow()
         self.initUI()
-
+        self.angle = 0
 
     def initUI(self):
         self.canvas_area = Button(
@@ -75,12 +84,16 @@ class Objects(Frame):
         self.rectangles = Button(
             self, text='gen_rectangle()',
              command=self.gen_rectangle, width=16)
-        triangles = Button(self, text='gen_triangles()', command=self.gen_triangle, width=16)
-        hexagons = Button(self, text='gen_hexagons()', command=self.gen_hexagon, width=16)
+        self.rotating_angle = Entry(self, width=16)
         self.rectangles.grid(row=0, column=1)
         self.canvas_area.grid(row=0, column=0)
+        triangles = Button(self, text='gen_triangles()', command=self.gen_triangle, width=16)
+        hexagons = Button(self, text='gen_hexagons()', command=self.gen_hexagon, width=16)
+        rotating = Button(self, text='rotate()', command=self.rotate, width=16)
         triangles.grid(row=0, column=2)
         hexagons.grid(row=0, column=3)
+        rotating.grid(row=1, column=0)
+        self.rotating_angle.grid(row=2, column=0)
 
     def make_canvas(self):
         self.canvas_window = Toplevel(self)
@@ -104,10 +117,19 @@ class Objects(Frame):
                                    x4=265, y4=276, x5=235, y5=276, x6=220, y6=250)
         self.all_hexagons.create_hexagons()
 
+    def rotate(self):
+        all_figures = self.canvas.find_all()
+        self.angle += int(self.rotating_angle.get())
+        points[4] = 0.5 * WIDTH + 0.5 * WIDTH * math.cos(self.angle)
+        points[0] = (WIDTH - (points[4] - 0.5 * WIDTH) * 2) / 2
+        for each in all_figures:
+            self.canvas.coords(each, points)
+        self.canvas.after(500, self.rotate)
+
 
     def centerWindow(self):
         w = 660
-        h = 32
+        h = 96
         sw = self.parent.winfo_screenwidth()
         sh = self.parent.winfo_screenheight()
         x = (sw - w) / 2
