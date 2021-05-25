@@ -127,18 +127,22 @@ class Objects(Frame):
         self.rectangles = Button(
             self, text='gen_rectangle()',
              command=self.gen_rectangle, width=16)
-        self.rotating_angle = Entry(self, width=16)
         self.rectangles.grid(row=0, column=1)
         self.canvas_area.grid(row=0, column=0)
         triangles = Button(self, text='gen_triangles()', command=self.gen_triangle, width=16)
         hexagons = Button(self, text='gen_hexagons()', command=self.gen_hexagon, width=16)
         ovals = Button(self, text='gen_ovals()', command=self.gen_oval, width=16)
         rotating = Button(self, text='rotate()', command=self.rotate, width=16)
+        self.rotating_angle = Entry(self, width=16)
+        moving = Button(self, text='move()', command=self.move, width=16)
+        self.deltaxy = Entry(self, width=16)
         triangles.grid(row=0, column=2)
         hexagons.grid(row=0, column=3)
         rotating.grid(row=1, column=0)
+        moving.grid(row=1, column=1)
         ovals.grid(row=0, column=4)
         self.rotating_angle.grid(row=2, column=0)
+        self.deltaxy.grid(row=2, column=1)
 
     def make_canvas(self):
         self.canvas_window = Toplevel(self)
@@ -165,6 +169,14 @@ class Objects(Frame):
     def gen_oval(self):
         self.all_ovals = Figure(self.canvas, x1=250, y1=250, x2=290, y2=290)
         self.all_ovals.create_ovals()
+
+    def move(self):
+        """Параллельный перенос"""
+        all_figures = self.canvas.find_all()
+        deltax, deltay = self.deltaxy.get().split(',')
+        for each in all_figures:
+            self.canvas.move(each, deltax, deltay)
+        self.canvas.after(100, self.move)
 
     def rotate(self):
         all_figures = self.canvas.find_all()
