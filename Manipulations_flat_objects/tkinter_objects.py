@@ -64,22 +64,22 @@ class Figure:
             #self.canvas.move(each, -10, 3)
         self.canvas.after(10, self.create_hexagons)
 
-    def create_ovals(self):
+    def create_n(self, n, angle):
         while not self.ovals_generated:
             for i in range(1000):
                 self.ovals.append(self.canvas.create_polygon(
-                    self.get_oval_coords(self.x1 + (i*60), self.y1, self.x2 + (i*60), self.y2)
+                    self.get_n_angles_coords(self.x1 + (i*60), self.y1, self.x2 + (i*60), self.y2,
+                                         n, angle)
                 ))
                 self.ovals.append(self.canvas.create_polygon(
-                    self.get_oval_coords(self.x1 - (i*60), self.y1, self.x2 - (i*60), self.y2)
+                    self.get_n_angles_coords(self.x1 - (i*60), self.y1, self.x2 - (i*60), self.y2,
+                                         n, angle)
                 ))
             self.ovals_generated = True
 
 
-    def get_oval_coords(self, x1, y1, x2, y2):
-        steps = 5
-        rotation = 60
-        rotation = rotation * math.pi / 180.0
+    def get_n_angles_coords(self, x1, y1, x2, y2, n, angle):
+        rotation = angle * math.pi / 180.0
 
         # major and minor axes
         a = (x2 - x1) / 2.0
@@ -90,8 +90,8 @@ class Figure:
         yc = y1 + b
 
         point_list = []
-        for i in range(steps):
-            theta = (math.pi * 2) * (float(i) / steps)
+        for i in range(n):
+            theta = (math.pi * 2) * (float(i) / n)
 
             x1 = a * math.cos(theta)
             y1 = b * math.sin(theta)
@@ -125,30 +125,33 @@ class Objects(Frame):
         self.canvas_area.grid(row=0, column=0)
         triangles = Button(self, text='gen_triangles()', command=self.gen_triangle, width=16)
         hexagons = Button(self, text='gen_hexagons()', command=self.gen_hexagon, width=16)
-        ovals = Button(self, text='gen_ovals()', command=self.gen_oval, width=16)
+        n_angles = Button(self, text='n_угольники()', command=self.gen_n_angles, width=16)
         rotating = Button(self, text='rotate()', command=self.rotate, width=16)
         self.rotating_angle = Entry(self, width=16)
         moving = Button(self, text='move()', command=self.move, width=16)
         self.deltaxy = Entry(self, width=16)
+        n_angle_label = Label(self, width=20, text='Кол-во углов, поворот')
+        self.n_angle = Entry(self, width=16)
         triangles.grid(row=0, column=2)
         hexagons.grid(row=0, column=3)
         rotating.grid(row=1, column=0)
         moving.grid(row=1, column=1)
-        ovals.grid(row=0, column=4)
+        n_angles.grid(row=0, column=4)
+        n_angle_label.grid(row=1, column=4)
         self.rotating_angle.grid(row=2, column=0)
         self.deltaxy.grid(row=2, column=1)
+        self.n_angle.grid(row=2, column=4)
 
     def make_canvas(self):
         self.canvas_window = Toplevel(self)
         self.canvas = Canvas(self.canvas_window, width=500, height=500)
         self.canvas.grid(row=0, column=0)
         # TODO: frontend
-        for i in range(100):
+        for i in range(100):  # x,y axes
             self.canvas.create_line(0 + (i*250), 250, 500 + (i*500), 250, width=2)
             self.canvas.create_line(0 - (i*250), 250, 500 - (i*500), 250, width=2)
             self.canvas.create_line(250, 500 + (i*500), 250, 0 + (i*500), width=2)
             self.canvas.create_line(250, 500 - (i*500), 250, 0 - (i*500), width=2)
-        self.canvas.focus()
 
     def gen_rectangle(self):
         self.all_rects = Figure(self.canvas, x1=250, y1=250, x2=275, y2=275)
@@ -163,9 +166,10 @@ class Objects(Frame):
                                    x4=265, y4=276, x5=235, y5=276, x6=220, y6=250)
         self.all_hexagons.create_hexagons()
 
-    def gen_oval(self):
-        self.all_ovals = Figure(self.canvas, x1=250, y1=250, x2=290, y2=290)
-        self.all_ovals.create_ovals()
+    def gen_n_angles(self):
+        self.all_n_angles = Figure(self.canvas, x1=250, y1=250, x2=290, y2=290)
+        n, angle = self.n_angle.get().split(',')
+        self.all_n_angles.create_n(int(n), int(angle))
 
     def move(self):
         """Параллельный перенос"""
@@ -176,11 +180,7 @@ class Objects(Frame):
         self.canvas.after(100, self.move)
 
     def rotate(self):
-        all_figures = self.canvas.find_all()
-        #all_bboxes
-        #self.angle += int(self.rotating_angle.get())
-        #for each in all_figures
-        self.canvas.after(500, self.rotate)
+        pass
 
 
     def centerWindow(self):
