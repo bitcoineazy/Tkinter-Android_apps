@@ -2,10 +2,6 @@ from tkinter import *
 import math
 
 
-HEIGHT = 500
-WIDTH = 500
-
-
 class Figure:
     def __init__(self, canvas, **coords):
         self.__dict__.update(coords)
@@ -81,8 +77,8 @@ class Figure:
 
 
     def get_oval_coords(self, x1, y1, x2, y2):
-        steps = 20
-        rotation = 30
+        steps = 5
+        rotation = 60
         rotation = rotation * math.pi / 180.0
 
         # major and minor axes
@@ -148,8 +144,11 @@ class Objects(Frame):
         self.canvas = Canvas(self.canvas_window, width=500, height=500)
         self.canvas.grid(row=0, column=0)
         # TODO: frontend
-        self.canvas.create_line(0, 250, 500, 250, width=2)
-        self.canvas.create_line(250, 500, 250, 0, width=2)
+        for i in range(100):
+            self.canvas.create_line(0 + (i*250), 250, 500 + (i*500), 250, width=2)
+            self.canvas.create_line(0 - (i*250), 250, 500 - (i*500), 250, width=2)
+            self.canvas.create_line(250, 500 + (i*500), 250, 0 + (i*500), width=2)
+            self.canvas.create_line(250, 500 - (i*500), 250, 0 - (i*500), width=2)
         self.canvas.focus()
 
     def gen_rectangle(self):
