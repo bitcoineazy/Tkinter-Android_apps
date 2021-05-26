@@ -23,9 +23,9 @@ class Figure:
                 self.rectangles.append(self.canvas.create_rectangle(
                     self.x1 - (i*40), self.y1, self.x2 - (i*40), self.y2, fill='black'))
             self.rectangles_generated = True
-        for each in self.rectangles:
-            self.canvas.move(each, -1, 0)
-        self.canvas.after(10, self.create_rectangles)
+        #for each in self.rectangles:
+        #    self.canvas.move(each, -1, 0)
+        #self.canvas.after(10, self.create_rectangles)
 
 
     def create_triangles(self):
@@ -114,7 +114,6 @@ class Objects(Frame):
         self.pack(fill=BOTH, expand=1)
         self.centerWindow()
         self.initUI()
-        self.angle = 0
 
     def initUI(self):
         self.canvas_area = Button(
@@ -178,8 +177,8 @@ class Objects(Frame):
 
     def rotate(self):
         all_figures = self.canvas.find_all()
-        all_bboxes
-        self.angle += int(self.rotating_angle.get())
+        #all_bboxes
+        #self.angle += int(self.rotating_angle.get())
         #for each in all_figures
         self.canvas.after(500, self.rotate)
 
