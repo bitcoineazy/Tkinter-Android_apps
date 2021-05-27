@@ -23,10 +23,9 @@ class Figure:
                 self.rectangles.append(self.canvas.create_rectangle(
                     self.x1 - (i*40), self.y1, self.x2 - (i*40), self.y2, fill='black'))
             self.rectangles_generated = True
-        #for each in self.rectangles:
-        #    self.canvas.move(each, -1, 0)
-        #self.canvas.after(10, self.create_rectangles)
-
+        for each in self.rectangles:
+            self.canvas.move(each, -1, 0)
+        self.canvas.after(10, self.create_rectangles)
 
     def create_triangles(self):
         while not self.triangles_generated:
@@ -41,7 +40,6 @@ class Figure:
         for each in self.triangles:
             self.canvas.move(each, 1, 0)
         self.canvas.after(10, self.create_triangles)
-
 
     def create_hexagons(self):
         while not self.hexagons_generated:
@@ -61,7 +59,6 @@ class Figure:
             #if self.hexagons.index(each) // 3 :
             #    self.canvas.itemconfigure(each, fill='blue')
             self.canvas.move(each, 10, 0)
-            #self.canvas.move(each, -10, 3)
         self.canvas.after(10, self.create_hexagons)
 
     def create_n(self, n, angle):
@@ -77,32 +74,24 @@ class Figure:
                 ))
             self.ovals_generated = True
 
-
     def get_n_angles_coords(self, x1, y1, x2, y2, n, angle):
         rotation = angle * math.pi / 180.0
-
-        # major and minor axes
+        # Оси
         a = (x2 - x1) / 2.0
         b = (y2 - y1) / 2.0
-
-        # center
+        # Центр
         xc = x1 + a
         yc = y1 + b
-
         point_list = []
         for i in range(n):
             theta = (math.pi * 2) * (float(i) / n)
-
             x1 = a * math.cos(theta)
             y1 = b * math.sin(theta)
-
-            # rotate x, y
+            # Поворачиваем x, y
             x = (x1 * math.cos(rotation)) + (y1 * math.sin(rotation))
             y = (y1 * math.cos(rotation)) - (x1 * math.sin(rotation))
-
             point_list.append(round(x + xc))
             point_list.append(round(y + yc))
-
         return point_list
 
 
@@ -114,7 +103,7 @@ class Objects(Frame):
         self.pack(fill=BOTH, expand=1)
         self.centerWindow()
         self.initUI()
-        self.grid_generated = False
+        self.all_figures = []
 
     def initUI(self):
         self.canvas_area = Button(
@@ -148,20 +137,21 @@ class Objects(Frame):
         self.canvas = Canvas(self.canvas_window, width=500, height=500)
         self.canvas.grid(row=0, column=0)
         # TODO: frontend
-        self.axes_lines = []
-        self.coords_grid_text = []
         for i in range(1000):  # x,y axes
-            self.axes_lines.append(self.canvas.create_line(0 + (i*250), 250, 500 + (i*500), 250, width=2))
-            self.axes_lines.append(self.canvas.create_line(0 - (i*250), 250, 500 - (i*500), 250, width=2))
-            self.axes_lines.append(self.canvas.create_line(250, 500 + (i*500), 250, 0 + (i*500), width=2))
-            self.axes_lines.append(self.canvas.create_line(250, 500 - (i*500), 250, 0 - (i*500), width=2))
+            self.canvas.create_line(0 + (i*250), 250, 500 + (i*500), 250, width=2)
+            self.canvas.create_line(0 - (i*250), 250, 500 - (i*500), 250, width=2)
+            self.canvas.create_line(250, 500 + (i*500), 250, 0 + (i*500), width=2)
+            self.canvas.create_line(250, 500 - (i*500), 250, 0 - (i*500), width=2)
         coords_grid = [i for i in range(1000000) if i % 100 == 0]
         for i in range(1000):
             if i > 0:
-                self.coords_grid_text.append(self.canvas.create_text(250 + (i*100), 260, text=f'{coords_grid[i]}'))
-                self.coords_grid_text.append(self.canvas.create_text(250 - (i*100), 260, text=f'-{coords_grid[i]}'))
-                self.coords_grid_text.append(self.canvas.create_text(250, 250 + (i*100), text=f'-{coords_grid[i]}'))
-                self.coords_grid_text.append(self.canvas.create_text(250, 250 - (i*100), text=f'{coords_grid[i]}'))
+                self.canvas.create_text(250 + (i*100), 260, text=f'{coords_grid[i]}')
+                self.canvas.create_text(250 - (i*100), 260, text=f'-{coords_grid[i]}')
+                self.canvas.create_text(250, 250 + (i*100), text=f'-{coords_grid[i]}')
+                self.canvas.create_text(250, 250 - (i*100), text=f'{coords_grid[i]}')
+        # Фиксация элементов координатной сетки, чтобы в дальнейшем её не двигать
+        self.canvas_grid = self.canvas.find_all()
+
     def gen_rectangle(self):
         self.all_rects = Figure(self.canvas, x1=250, y1=250, x2=275, y2=275)
         self.all_rects.create_rectangles()
@@ -182,24 +172,16 @@ class Objects(Frame):
 
     def move(self):
         """Параллельный перенос"""
-        while not self.grid_generated:
-            all_figures = self.canvas.find_all()
-            all_figures_objects = []
-            for each in all_figures:
-                all_figures_objects.append(each)
-            deltax, deltay = self.deltaxy.get().split(',')
-            for each in self.axes_lines:
-                all_figures_objects.remove(each)
-            for each in self.coords_grid_text:
-                all_figures_objects.remove(each)
-            self.grid_generated = True
-        for each in all_figures_objects:
+        deltax, deltay = self.deltaxy.get().split(',')
+        all_figures = self.canvas.find_all()
+        # Фигуры, которые можно двигать (без поля)
+        movable_figures = list(set(all_figures) - set(self.canvas_grid))
+        for each in movable_figures:
             self.canvas.move(each, deltax, deltay)
-        self.canvas.after(2, self.move)
+        self.canvas.after(10, self.move)
 
     def rotate(self):
         pass
-
 
     def centerWindow(self):
         w = 880
