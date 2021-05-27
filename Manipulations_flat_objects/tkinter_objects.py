@@ -114,6 +114,7 @@ class Objects(Frame):
         self.pack(fill=BOTH, expand=1)
         self.centerWindow()
         self.initUI()
+        self.grid_generated = False
 
     def initUI(self):
         self.canvas_area = Button(
@@ -147,12 +148,20 @@ class Objects(Frame):
         self.canvas = Canvas(self.canvas_window, width=500, height=500)
         self.canvas.grid(row=0, column=0)
         # TODO: frontend
-        for i in range(100):  # x,y axes
-            self.canvas.create_line(0 + (i*250), 250, 500 + (i*500), 250, width=2)
-            self.canvas.create_line(0 - (i*250), 250, 500 - (i*500), 250, width=2)
-            self.canvas.create_line(250, 500 + (i*500), 250, 0 + (i*500), width=2)
-            self.canvas.create_line(250, 500 - (i*500), 250, 0 - (i*500), width=2)
-
+        self.axes_lines = []
+        self.coords_grid_text = []
+        for i in range(1000):  # x,y axes
+            self.axes_lines.append(self.canvas.create_line(0 + (i*250), 250, 500 + (i*500), 250, width=2))
+            self.axes_lines.append(self.canvas.create_line(0 - (i*250), 250, 500 - (i*500), 250, width=2))
+            self.axes_lines.append(self.canvas.create_line(250, 500 + (i*500), 250, 0 + (i*500), width=2))
+            self.axes_lines.append(self.canvas.create_line(250, 500 - (i*500), 250, 0 - (i*500), width=2))
+        coords_grid = [i for i in range(1000000) if i % 100 == 0]
+        for i in range(1000):
+            if i > 0:
+                self.coords_grid_text.append(self.canvas.create_text(250 + (i*100), 260, text=f'{coords_grid[i]}'))
+                self.coords_grid_text.append(self.canvas.create_text(250 - (i*100), 260, text=f'-{coords_grid[i]}'))
+                self.coords_grid_text.append(self.canvas.create_text(250, 250 + (i*100), text=f'-{coords_grid[i]}'))
+                self.coords_grid_text.append(self.canvas.create_text(250, 250 - (i*100), text=f'{coords_grid[i]}'))
     def gen_rectangle(self):
         self.all_rects = Figure(self.canvas, x1=250, y1=250, x2=275, y2=275)
         self.all_rects.create_rectangles()
@@ -173,11 +182,20 @@ class Objects(Frame):
 
     def move(self):
         """Параллельный перенос"""
-        all_figures = self.canvas.find_all()
-        deltax, deltay = self.deltaxy.get().split(',')
-        for each in all_figures:
+        while not self.grid_generated:
+            all_figures = self.canvas.find_all()
+            all_figures_objects = []
+            for each in all_figures:
+                all_figures_objects.append(each)
+            deltax, deltay = self.deltaxy.get().split(',')
+            for each in self.axes_lines:
+                all_figures_objects.remove(each)
+            for each in self.coords_grid_text:
+                all_figures_objects.remove(each)
+            self.grid_generated = True
+        for each in all_figures_objects:
             self.canvas.move(each, deltax, deltay)
-        self.canvas.after(100, self.move)
+        self.canvas.after(2, self.move)
 
     def rotate(self):
         pass
