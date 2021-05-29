@@ -10,6 +10,7 @@ class Figure:
         self.triangles = []
         self.hexagons = []
         self.ovals = []
+        self.strips = []
         self.rectangles_generated = False
         self.triangles_generated = False
         self.hexagons_generated = False
@@ -43,8 +44,6 @@ class Figure:
 
     def create_hexagons(self):
         while not self.hexagons_generated:
-            all_hexs = self.canvas.find_all()
-            #print(self.canvas.itemcget(all_hexs[0], 'offset'))
             for i in range(1000):
                 self.hexagons.append(self.canvas.create_polygon(
                     self.x4 + (i*80), self.y4, self.x5  + (i*80), self.y5, self.x6  + (i*80), self.y6,
@@ -94,6 +93,18 @@ class Figure:
             point_list.append(round(y + yc))
         return point_list
 
+    def create_3_strips(self):
+        for i in range(1000):
+            self.strips.append(self.canvas.create_rectangle(
+                self.x1 + (i*50), self.y1 + (i*50), self.x2 + (i*50), self.y2 + (i*50), fill='yellow'
+            ))
+            self.strips.append(self.canvas.create_rectangle(
+                self.x1 - (i*50), self.y1 - (i*50), self.x2 - (i*50), self.y2 - (i*50), fill='red'
+            ))
+            self.strips.append(self.canvas.create_rectangle(
+                self.x1-25 + (i*50), self.y1 + (i*50), self.x2-25 + (i*50), self.y2 + (i*50), fill='blue'
+            ))
+
 
 class Objects(Frame):
     def __init__(self, parent):
@@ -117,6 +128,10 @@ class Objects(Frame):
         hexagons = Button(self, text='gen_hexagons()', command=self.gen_hexagon, width=16)
         n_angles = Button(self, text='n_угольники()', command=self.gen_n_angles, width=16)
         rotating = Button(self, text='rotate()', command=self.rotate, width=16)
+        strips_1 = Button(self, text='4.1', command=self.make_strips, width=4)
+        strips_2 = Button(self, text='4.2', command=self.make_overlapping, width=4)
+        strips_1.grid(row=3, column=2, sticky='w')
+        strips_2.grid(row=3, column=2, sticky='e')
         self.rotating_angle = Entry(self, width=16)
         moving = Button(self, text='move()', command=self.move, width=16)
         self.deltaxy = Entry(self, width=16)
@@ -153,22 +168,29 @@ class Objects(Frame):
         self.canvas_grid = self.canvas.find_all()
 
     def gen_rectangle(self):
-        self.all_rects = Figure(self.canvas, x1=250, y1=250, x2=275, y2=275)
-        self.all_rects.create_rectangles()
+        all_rects = Figure(self.canvas, x1=250, y1=250, x2=275, y2=275)
+        all_rects.create_rectangles()
 
     def gen_triangle(self):
-        self.all_triangles = Figure(self.canvas, x1=300, y1=250, x2=285, y2=330, x3=265, y3=250)
-        self.all_triangles.create_triangles()
+        all_triangles = Figure(self.canvas, x1=300, y1=250, x2=285, y2=330, x3=265, y3=250)
+        all_triangles.create_triangles()
 
     def gen_hexagon(self):
-        self.all_hexagons = Figure(self.canvas, x1=235, y1=224, x2=265, y2=224, x3=280, y3=250,
+        all_hexagons = Figure(self.canvas, x1=235, y1=224, x2=265, y2=224, x3=280, y3=250,
                                    x4=265, y4=276, x5=235, y5=276, x6=220, y6=250)
-        self.all_hexagons.create_hexagons()
+        all_hexagons.create_hexagons()
 
     def gen_n_angles(self):
-        self.all_n_angles = Figure(self.canvas, x1=250, y1=250, x2=290, y2=290)
+        all_n_angles = Figure(self.canvas, x1=250, y1=250, x2=290, y2=290)
         n, angle = self.n_angle.get().split(',')
-        self.all_n_angles.create_n(int(n), int(angle))
+        all_n_angles.create_n(int(n), int(angle))
+
+    def make_strips(self):
+        strips = Figure(self.canvas, x1=375, y1=375, x2=395, y2=395)
+        strips.create_3_strips()
+
+    def make_overlapping(self):
+        pass
 
     def move(self):
         """Параллельный перенос"""
