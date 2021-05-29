@@ -93,16 +93,25 @@ class Figure:
             point_list.append(round(y + yc))
         return point_list
 
-    def create_3_strips(self):
+    def create_3_strips(self): # 4.1
         for i in range(1000):
             self.strips.append(self.canvas.create_rectangle(
-                self.x1 + (i*50), self.y1 + (i*50), self.x2 + (i*50), self.y2 + (i*50), fill='yellow'
+                self.x1 + (i*50), self.y1 + (i*50), self.x2 + (i*50), self.y2 + (i*50), fill='red'
             ))
             self.strips.append(self.canvas.create_rectangle(
                 self.x1 - (i*50), self.y1 - (i*50), self.x2 - (i*50), self.y2 - (i*50), fill='red'
             ))
             self.strips.append(self.canvas.create_rectangle(
                 self.x1-25 + (i*50), self.y1 + (i*50), self.x2-25 + (i*50), self.y2 + (i*50), fill='blue'
+            ))
+            self.strips.append(self.canvas.create_rectangle(
+                self.x1-25 - (i*50), self.y1 - (i*50), self.x2-25 - (i*50), self.y2 - (i*50), fill='blue'
+            ))
+            self.strips.append(self.canvas.create_rectangle(
+                self.x1+25 + (i*50), self.y1 + (i*50), self.x2+25 + (i*50), self.y2 + (i*50), fill='yellow'
+            ))
+            self.strips.append(self.canvas.create_rectangle(
+                self.x1+25 - (i*50), self.y1 - (i*50), self.x2+25 - (i*50), self.y2 - (i*50), fill='yellow'
             ))
 
 
@@ -128,10 +137,10 @@ class Objects(Frame):
         hexagons = Button(self, text='gen_hexagons()', command=self.gen_hexagon, width=16)
         n_angles = Button(self, text='n_угольники()', command=self.gen_n_angles, width=16)
         rotating = Button(self, text='rotate()', command=self.rotate, width=16)
-        strips_1 = Button(self, text='4.1', command=self.make_strips, width=4)
-        strips_2 = Button(self, text='4.2', command=self.make_overlapping, width=4)
-        strips_1.grid(row=3, column=2, sticky='w')
-        strips_2.grid(row=3, column=2, sticky='e')
+        strips_1 = Button(self, text='4.1', command=self.make_strips, width=2)
+        strips_2 = Button(self, text='4.2', command=self.make_overlapping, width=2)
+        strips_1.grid(row=1, column=2, sticky='w')
+        strips_2.grid(row=1, column=2, sticky='e')
         self.rotating_angle = Entry(self, width=16)
         moving = Button(self, text='move()', command=self.move, width=16)
         self.deltaxy = Entry(self, width=16)
@@ -185,11 +194,11 @@ class Objects(Frame):
         n, angle = self.n_angle.get().split(',')
         all_n_angles.create_n(int(n), int(angle))
 
-    def make_strips(self):
+    def make_strips(self): # 4.1
         strips = Figure(self.canvas, x1=375, y1=375, x2=395, y2=395)
         strips.create_3_strips()
 
-    def make_overlapping(self):
+    def make_overlapping(self): # 4.2
         pass
 
     def move(self):
