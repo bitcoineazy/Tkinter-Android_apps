@@ -56,8 +56,8 @@ class Figure:
                 ))
             self.hexagons_generated = True
         for each in self.hexagons:
-            #if self.hexagons.index(each) // 3 :
-            #    self.canvas.itemconfigure(each, fill='blue')
+            if self.hexagons.index(each) // 3 :
+                self.canvas.itemconfigure(each, fill='darkred')
             self.canvas.move(each, 10, 0)
         self.canvas.after(10, self.create_hexagons)
 
@@ -134,21 +134,21 @@ class Objects(Frame):
 
     def make_canvas(self):
         self.canvas_window = Toplevel(self)
-        self.canvas = Canvas(self.canvas_window, width=500, height=500)
+        self.canvas = Canvas(self.canvas_window, width=750, height=750)
         self.canvas.grid(row=0, column=0)
         # TODO: frontend
         for i in range(1000):  # x,y axes
-            self.canvas.create_line(0 + (i*250), 250, 500 + (i*500), 250, width=2)
-            self.canvas.create_line(0 - (i*250), 250, 500 - (i*500), 250, width=2)
-            self.canvas.create_line(250, 500 + (i*500), 250, 0 + (i*500), width=2)
-            self.canvas.create_line(250, 500 - (i*500), 250, 0 - (i*500), width=2)
+            self.canvas.create_line(0 + (i*375), 375, 750 + (i*750), 375, width=2)
+            self.canvas.create_line(0 - (i*375), 375, 750 - (i*750), 375, width=2)
+            self.canvas.create_line(375, 750 + (i*750), 375, 0 + (i*750), width=2)
+            self.canvas.create_line(375, 750 - (i*750), 375, 0 - (i*750), width=2)
         coords_grid = [i for i in range(1000000) if i % 100 == 0]
         for i in range(1000):
             if i > 0:
-                self.canvas.create_text(250 + (i*100), 260, text=f'{coords_grid[i]}')
-                self.canvas.create_text(250 - (i*100), 260, text=f'-{coords_grid[i]}')
-                self.canvas.create_text(250, 250 + (i*100), text=f'-{coords_grid[i]}')
-                self.canvas.create_text(250, 250 - (i*100), text=f'{coords_grid[i]}')
+                self.canvas.create_text(375 + (i*100), 385, text=f'{coords_grid[i]}')
+                self.canvas.create_text(375 - (i*100), 385, text=f'-{coords_grid[i]}')
+                self.canvas.create_text(395, 395 + (i*100), text=f'-{coords_grid[i]}')
+                self.canvas.create_text(395, 395 - (i*100), text=f'{coords_grid[i]}')
         # Фиксация элементов координатной сетки, чтобы в дальнейшем её не двигать
         self.canvas_grid = self.canvas.find_all()
 
