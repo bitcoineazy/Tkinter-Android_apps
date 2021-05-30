@@ -11,10 +11,12 @@ class Figure:
         self.hexagons = []
         self.ovals = []
         self.strips = []
+        self.overlapping = []
         self.rectangles_generated = False
         self.triangles_generated = False
         self.hexagons_generated = False
         self.ovals_generated = False
+        self.overlapping_generated = False
 
     def create_rectangles(self):
         while not self.rectangles_generated:
@@ -114,6 +116,22 @@ class Figure:
                 self.x1+25 - (i*50), self.y1 - (i*50), self.x2+25 - (i*50), self.y2 - (i*50), fill='yellow'
             ))
 
+    def create_overlapping(self):
+        for i in range(1000):
+            self.overlapping.append(self.canvas.create_rectangle(
+                self.x1 + (i*50), self.y1 + (i*25), self.x2 + (i*50), self.y2 + (i*25), fill='red'
+            ))
+            self.overlapping.append(self.canvas.create_rectangle(
+                self.x1 - (i*50), self.y1 - (i*25), self.x2 - (i*50), self.y2 - (i*25), fill='red'
+            ))
+            self.overlapping.append(self.canvas.create_polygon(
+                self.x1_2 + (i*40), self.y1_2, self.x2_2 + (i*40), self.y2_2, fill='blue'
+            ))
+            self.overlapping.append(self.canvas.create_rectangle(
+                self.x1_2 - (i*40), self.y1_2, self.x2_2 - (i*40), self.y2_2, fill='blue'
+            ))
+
+
 
 class Objects(Frame):
     def __init__(self, parent):
@@ -140,7 +158,7 @@ class Objects(Frame):
         strips_1 = Button(self, text='4.1', command=self.make_strips, width=2)
         strips_2 = Button(self, text='4.2', command=self.make_overlapping, width=2)
         strips_1.grid(row=1, column=2, sticky='w')
-        strips_2.grid(row=1, column=2, sticky='e')
+        strips_2.grid(row=1, column=2)
         self.rotating_angle = Entry(self, width=16)
         moving = Button(self, text='move()', command=self.move, width=16)
         self.deltaxy = Entry(self, width=16)
@@ -199,7 +217,9 @@ class Objects(Frame):
         strips.create_3_strips()
 
     def make_overlapping(self): # 4.2
-        pass
+        overlapping = Figure(self.canvas, x1=375, y1=375, x2=405, y2=405,
+                             x1_2=500, y1_2=500, x2_2=530, y2_2=530)
+        overlapping.create_overlapping()
 
     def move(self):
         """Параллельный перенос"""
