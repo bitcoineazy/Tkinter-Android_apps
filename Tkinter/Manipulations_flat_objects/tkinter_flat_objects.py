@@ -13,7 +13,8 @@ class Figure:
         self.strips = []
         self.overlapping_1 = []
         self.overlapping_2 = []
-        self.symmetric = []
+        self.symmetric_1 = []
+        self.symmetric_2 = []
         self.rectangles_generated = False
         self.triangles_generated = False
         self.hexagons_generated = False
@@ -144,21 +145,23 @@ class Figure:
     def create_symmetric(self): #4.3
         while not self.symmetric_generated:
             for i in range(1000):
-                self.symmetric.append(self.canvas.create_polygon(
+                self.symmetric_1.append(self.canvas.create_polygon(
                     self.get_n_angles_coords(
-                        self.x1 + (i*30), self.y1, self.x2 + (i*30), self.y2, n=3, angle=0)))
-                self.symmetric.append(self.canvas.create_polygon(
+                        self.x1 + (i*30), self.y1, self.x2 + (i*30), self.y2, n=3, angle=150)))
+                self.symmetric_1.append(self.canvas.create_polygon(
                     self.get_n_angles_coords(
-                        self.x1 - (i*30), self.y1, self.x2 - (i*30), self.y2, n=3, angle=0)))
-                self.symmetric.append(self.canvas.create_polygon(
+                        self.x1 - (i*30), self.y1, self.x2 - (i*30), self.y2, n=3, angle=150)))
+                self.symmetric_2.append(self.canvas.create_polygon(
                     self.get_n_angles_coords(
-                        self.x1 + (i*30), self.y1+30, self.x2 + (i*30), self.y2+30, n=3, angle=180)))
-                self.symmetric.append(self.canvas.create_polygon(
+                        self.x1 + (i*30), self.y1+30, self.x2 + (i*30), self.y2+30, n=3, angle=90)))
+                self.symmetric_2.append(self.canvas.create_polygon(
                     self.get_n_angles_coords(
-                        self.x1 - (i*30), self.y1+30, self.x2 - (i*30), self.y2+30, n=3, angle=180)))
+                        self.x1 - (i*30), self.y1+30, self.x2 - (i*30), self.y2+30, n=3, angle=90)))
             self.symmetric_generated = True
-        for each in self.symmetric:
+        for each in self.symmetric_1:
             self.canvas.move(each, -7, 0)
+        for each in self.symmetric_2:
+            self.canvas.move(each, 7, 0)
         self.canvas.after(10, self.create_symmetric)
 
 
@@ -253,7 +256,7 @@ class Objects(Frame):
         overlapping.create_overlapping()
 
     def make_symmetric(self): # 4.3
-        symmetric = Figure(self.canvas, x1=375, y1=375, x2=405, y2=405)
+        symmetric = Figure(self.canvas, x1=400, y1=400, x2=430, y2=430)
         symmetric.create_symmetric()
 
     def move(self):
