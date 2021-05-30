@@ -13,11 +13,13 @@ class Figure:
         self.strips = []
         self.overlapping_1 = []
         self.overlapping_2 = []
+        self.symmetric = []
         self.rectangles_generated = False
         self.triangles_generated = False
         self.hexagons_generated = False
         self.ovals_generated = False
         self.overlapping_generated = False
+        self.symmetric_generated = False
 
     def create_rectangles(self):
         while not self.rectangles_generated:
@@ -139,6 +141,25 @@ class Figure:
             self.canvas.move(each, 5, 0)
         self.canvas.after(10, self.create_overlapping)
 
+    def create_symmetric(self): #4.3
+        while not self.symmetric_generated:
+            for i in range(1000):
+                self.symmetric.append(self.canvas.create_polygon(
+                    self.get_n_angles_coords(
+                        self.x1 + (i*30), self.y1, self.x2 + (i*30), self.y2, n=3, angle=0)))
+                self.symmetric.append(self.canvas.create_polygon(
+                    self.get_n_angles_coords(
+                        self.x1 - (i*30), self.y1, self.x2 - (i*30), self.y2, n=3, angle=0)))
+                self.symmetric.append(self.canvas.create_polygon(
+                    self.get_n_angles_coords(
+                        self.x1 + (i*30), self.y1+30, self.x2 + (i*30), self.y2+30, n=3, angle=180)))
+                self.symmetric.append(self.canvas.create_polygon(
+                    self.get_n_angles_coords(
+                        self.x1 - (i*30), self.y1+30, self.x2 - (i*30), self.y2+30, n=3, angle=180)))
+            self.symmetric_generated = True
+        for each in self.symmetric:
+            self.canvas.move(each, -7, 0)
+        self.canvas.after(10, self.create_symmetric)
 
 
 class Objects(Frame):
@@ -165,8 +186,10 @@ class Objects(Frame):
         rotating = Button(self, text='rotate()', command=self.rotate, width=16)
         strips_1 = Button(self, text='4.1', command=self.make_strips, width=2)
         strips_2 = Button(self, text='4.2', command=self.make_overlapping, width=2)
+        symmetric = Button(self, text='4.3', command=self.make_symmetric, width=2)
         strips_1.grid(row=1, column=2, sticky='w')
         strips_2.grid(row=1, column=2)
+        symmetric.grid(row=1, column=2, sticky='e')
         self.rotating_angle = Entry(self, width=16)
         moving = Button(self, text='move()', command=self.move, width=16)
         self.deltaxy = Entry(self, width=16)
@@ -228,6 +251,10 @@ class Objects(Frame):
         overlapping = Figure(self.canvas, x1=375, y1=375, x2=405, y2=405,
                              x1_2=500, y1_2=500, x2_2=530, y2_2=530)
         overlapping.create_overlapping()
+
+    def make_symmetric(self): # 4.3
+        symmetric = Figure(self.canvas, x1=375, y1=375, x2=405, y2=405)
+        symmetric.create_symmetric()
 
     def move(self):
         """Параллельный перенос"""
