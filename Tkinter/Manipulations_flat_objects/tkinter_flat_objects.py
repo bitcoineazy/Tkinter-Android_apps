@@ -11,7 +11,8 @@ class Figure:
         self.hexagons = []
         self.ovals = []
         self.strips = []
-        self.overlapping = []
+        self.overlapping_1 = []
+        self.overlapping_2 = []
         self.rectangles_generated = False
         self.triangles_generated = False
         self.hexagons_generated = False
@@ -116,20 +117,27 @@ class Figure:
                 self.x1+25 - (i*50), self.y1 - (i*50), self.x2+25 - (i*50), self.y2 - (i*50), fill='yellow'
             ))
 
-    def create_overlapping(self):
-        for i in range(1000):
-            self.overlapping.append(self.canvas.create_rectangle(
-                self.x1 + (i*50), self.y1 + (i*25), self.x2 + (i*50), self.y2 + (i*25), fill='red'
-            ))
-            self.overlapping.append(self.canvas.create_rectangle(
-                self.x1 - (i*50), self.y1 - (i*25), self.x2 - (i*50), self.y2 - (i*25), fill='red'
-            ))
-            self.overlapping.append(self.canvas.create_polygon(
-                self.x1_2 + (i*40), self.y1_2, self.x2_2 + (i*40), self.y2_2, fill='blue'
-            ))
-            self.overlapping.append(self.canvas.create_rectangle(
-                self.x1_2 - (i*40), self.y1_2, self.x2_2 - (i*40), self.y2_2, fill='blue'
-            ))
+    def create_overlapping(self): # 4.2
+        while not self.overlapping_generated:
+            for i in range(1000):
+                self.overlapping_1.append(self.canvas.create_rectangle(
+                    self.x1 + (i*50), self.y1 + (i*25), self.x2 + (i*50), self.y2 + (i*25), fill='red'
+                ))
+                self.overlapping_1.append(self.canvas.create_rectangle(
+                    self.x1 - (i*50), self.y1 - (i*25), self.x2 - (i*50), self.y2 - (i*25), fill='red'
+                ))
+                self.overlapping_2.append(self.canvas.create_polygon(
+                    self.x1_2 + (i*40), self.y1_2, self.x2_2 + (i*40), self.y2_2, fill='blue'
+                ))
+                self.overlapping_2.append(self.canvas.create_rectangle(
+                    self.x1_2 - (i*40), self.y1_2, self.x2_2 - (i*40), self.y2_2, fill='blue'
+                ))
+            self.overlapping_generated = True
+        for each in self.overlapping_1:
+            self.canvas.move(each, 4, 2)
+        for each in self.overlapping_2:
+            self.canvas.move(each, 5, 0)
+        self.canvas.after(10, self.create_overlapping)
 
 
 
