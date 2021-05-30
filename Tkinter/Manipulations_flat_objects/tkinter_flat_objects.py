@@ -190,9 +190,9 @@ class Objects(Frame):
         strips_1 = Button(self, text='4.1', command=self.make_strips, width=2)
         strips_2 = Button(self, text='4.2', command=self.make_overlapping, width=2)
         symmetric = Button(self, text='4.3', command=self.make_symmetric, width=2)
-        strips_1.grid(row=1, column=2, sticky='w')
-        strips_2.grid(row=1, column=2)
-        symmetric.grid(row=1, column=2, sticky='e')
+        strips_1.grid(row=1, column=3, sticky='w')
+        strips_2.grid(row=1, column=3)
+        symmetric.grid(row=1, column=3, sticky='e')
         self.rotating_angle = Entry(self, width=16)
         moving = Button(self, text='move()', command=self.move, width=16)
         self.deltaxy = Entry(self, width=16)
@@ -270,7 +270,35 @@ class Objects(Frame):
         self.canvas.after(10, self.move)
 
     def rotate(self):
-        pass
+        angle = int(self.rotating_angle.get())
+        rotation = angle * math.pi / 180.0
+        all_figures = self.canvas.find_all()
+        movable_figures = list(set(all_figures) - set(self.canvas_grid))
+        coords = []
+        for each in movable_figures:
+            coords.append(self.canvas.coords(each))
+        print(coords)
+        for item in coords:
+            n = len(item) // 2 # кол-во вершин
+            #print(n)
+            print(list(map(lambda x1, y1, x2, y2: get_n_angles_coords(x1, y1, x2, y2, n, angle), item)))
+            '''for i in range(n-1):
+                a = (item[i + 2] - item[i*2]) / 2.0 # a = (x2 - x1) / 2.0
+                b = (item[(i*2) + 3] - item[(i*2) + 1]) / 2.0 # b = (y2 - y1) / 2.0
+                # Центр
+                xc = item[i*2] + a # x1 + a
+                yc = item[(i*2) + 1] + b # y1 + b
+                theta = (math.pi * 2) * (float(i) / n)
+                x1 = a * math.cos(theta)
+                y1 = b * math.sin(theta)
+                # Поворачиваем x, y
+                x = (x1 * math.cos(rotation)) + (y1 * math.sin(rotation))
+                y = (y1 * math.cos(rotation)) - (x1 * math.sin(rotation))
+                item[i] = (round(x + xc))
+                item[i+1] = (round(y + yc))'''
+
+
+        print(coords)
 
     def centerWindow(self):
         w = 880
