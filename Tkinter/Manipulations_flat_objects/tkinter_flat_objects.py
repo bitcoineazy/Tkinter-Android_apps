@@ -275,27 +275,58 @@ class Objects(Frame):
         all_figures = self.canvas.find_all()
         movable_figures = list(set(all_figures) - set(self.canvas_grid))
         coords = []
+        tuple_coords = []
         for each in movable_figures:
             coords.append(self.canvas.coords(each))
         print(coords)
+        n = 0
         for item in coords:
-            n = len(item) // 2 # кол-во вершин
+            n += len(item) // 2 # кол-во вершин
             #print(n)
-            print(list(map(lambda x1, y1, x2, y2: get_n_angles_coords(x1, y1, x2, y2, n, angle), item)))
-            '''for i in range(n-1):
-                a = (item[i + 2] - item[i*2]) / 2.0 # a = (x2 - x1) / 2.0
-                b = (item[(i*2) + 3] - item[(i*2) + 1]) / 2.0 # b = (y2 - y1) / 2.0
-                # Центр
-                xc = item[i*2] + a # x1 + a
-                yc = item[(i*2) + 1] + b # y1 + b
+            for i in range(0, len(item), 2):
+                tuple_coords.append([item[i], item[i+1]])
+        print(tuple_coords)
+        #print(list(map(lambda x1, y1, x2, y2: get_n_angles_coords(x1, y1, x2, y2, n, angle), item)))
+        '''for i in range(n-1):
+            a = (item[i + 2] - item[i*2]) / 2.0 # a = (x2 - x1) / 2.0
+            b = (item[(i*2) + 3] - item[(i*2) + 1]) / 2.0 # b = (y2 - y1) / 2.0
+            # Центр
+            xc = item[i*2] + a # x1 + a
+            yc = item[(i*2) + 1] + b # y1 + b
+            theta = (math.pi * 2) * (float(i) / n)
+            x1 = a * math.cos(theta)
+            y1 = b * math.sin(theta)
+            # Поворачиваем x, y
+            x = (x1 * math.cos(rotation)) + (y1 * math.sin(rotation))
+            y = (y1 * math.cos(rotation)) - (x1 * math.sin(rotation))
+            item[i] = (round(x + xc))
+            item[i+1] = (round(y + yc))
+            rotation = angle * math.pi / 180.0
+            # Оси
+            a = (x2 - x1) / 2.0
+            b = (y2 - y1) / 2.0
+            # Центр
+            xc = x1 + a
+            yc = y1 + b
+            point_list = []
+            for i in range(n):
                 theta = (math.pi * 2) * (float(i) / n)
                 x1 = a * math.cos(theta)
                 y1 = b * math.sin(theta)
                 # Поворачиваем x, y
                 x = (x1 * math.cos(rotation)) + (y1 * math.sin(rotation))
                 y = (y1 * math.cos(rotation)) - (x1 * math.sin(rotation))
-                item[i] = (round(x + xc))
-                item[i+1] = (round(y + yc))'''
+                point_list.append(round(x + xc))
+                point_list.append(round(y + yc))'''
+        for i in range(len(tuple_coords)-1):
+            for z in range(2):
+                a = (tuple_coords[i+1][0] - tuple_coords[i][0]) / 2.0
+                b = (tuple_coords[i+1][1] - tuple_coords[i][1]) / 2.0
+                xc = tuple_coords[i][0] + a
+                yc = tuple_coords[i][1] + b
+                tuple_coords[i][]
+
+
 
 
         print(coords)
