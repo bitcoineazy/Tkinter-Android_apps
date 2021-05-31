@@ -275,12 +275,11 @@ class Objects(Frame):
         all_figures = self.canvas.find_all()
         movable_figures = list(set(all_figures) - set(self.canvas_grid))
         box_coords = []
-        tuple_coords = []
+        real_coords = []
         for each in movable_figures:
             box_coords.append(self.canvas.bbox(each))
-            tuple_coords.append(self.canvas.coords(each))
-        print(box_coords)
-        n = 3
+            real_coords.append(self.canvas.coords(each))
+        #print(box_coords)
         new_coords = []
         rotator = Figure(self.canvas)
         for item in box_coords:
@@ -288,61 +287,15 @@ class Objects(Frame):
             y1 = item[1]
             x2 = item[2]
             y2 = item[3]
+            n = len(real_coords[box_coords.index(item)]) // 2
             new_coords.append(rotator.get_n_angles_coords(x1, y1, x2, y2, n, angle))
-        print(new_coords)
-        print(tuple_coords)
-
+        #print(new_coords)
+        #print(real_coords)
         for figure in movable_figures:
-            self.canvas.coords(figure,
-                               [new_coords[movable_figures.index(figure)][0],
-                                new_coords[movable_figures.index(figure)][1],
-                                new_coords[movable_figures.index(figure)][2],
-                                new_coords[movable_figures.index(figure)][3]])
+            self.rotating(figure, new_coords[movable_figures.index(figure)])
 
-        #print(list(map(lambda x1, y1, x2, y2: get_n_angles_coords(x1, y1, x2, y2, n, angle), item)))
-        '''for i in range(n-1):
-            a = (item[i + 2] - item[i*2]) / 2.0 # a = (x2 - x1) / 2.0
-            b = (item[(i*2) + 3] - item[(i*2) + 1]) / 2.0 # b = (y2 - y1) / 2.0
-            # Центр
-            xc = item[i*2] + a # x1 + a
-            yc = item[(i*2) + 1] + b # y1 + b
-            theta = (math.pi * 2) * (float(i) / n)
-            x1 = a * math.cos(theta)
-            y1 = b * math.sin(theta)
-            # Поворачиваем x, y
-            x = (x1 * math.cos(rotation)) + (y1 * math.sin(rotation))
-            y = (y1 * math.cos(rotation)) - (x1 * math.sin(rotation))
-            item[i] = (round(x + xc))
-            item[i+1] = (round(y + yc))
-            rotation = angle * math.pi / 180.0
-            # Оси
-            a = (x2 - x1) / 2.0
-            b = (y2 - y1) / 2.0
-            # Центр
-            xc = x1 + a
-            yc = y1 + b
-            point_list = []
-            for i in range(n):
-                theta = (math.pi * 2) * (float(i) / n)
-                x1 = a * math.cos(theta)
-                y1 = b * math.sin(theta)
-                # Поворачиваем x, y
-                x = (x1 * math.cos(rotation)) + (y1 * math.sin(rotation))
-                y = (y1 * math.cos(rotation)) - (x1 * math.sin(rotation))
-                point_list.append(round(x + xc))
-                point_list.append(round(y + yc))'''
-
-        '''for i in range(len(tuple_coords)-1):
-            for z in range(2):
-                a = (tuple_coords[i+1][0] - tuple_coords[i][0]) / 2.0
-                b = (tuple_coords[i+1][1] - tuple_coords[i][1]) / 2.0
-                xc = tuple_coords[i][0] + a
-                yc = tuple_coords[i][1] + b
-                tuple_coords[i][]'''
-
-
-
-
+    def rotating(self, figure, *args):
+        self.canvas.coords(figure, [float(x) for x in args[0]])
 
     def centerWindow(self):
         w = 880
