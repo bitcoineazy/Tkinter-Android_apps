@@ -287,7 +287,7 @@ class Objects(Frame):
             y1 = item[1]
             x2 = item[2]
             y2 = item[3]
-            n = len(real_coords[box_coords.index(item)]) // 2
+            n = len(real_coords[box_coords.index(item)]) // 2  # кол-во углов у фигуры
             new_coords.append(rotator.get_n_angles_coords(x1, y1, x2, y2, n, angle))
         #print(new_coords)
         #print(real_coords)
