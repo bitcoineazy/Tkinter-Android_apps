@@ -274,18 +274,31 @@ class Objects(Frame):
         rotation = angle * math.pi / 180.0
         all_figures = self.canvas.find_all()
         movable_figures = list(set(all_figures) - set(self.canvas_grid))
-        coords = []
+        box_coords = []
         tuple_coords = []
         for each in movable_figures:
-            coords.append(self.canvas.coords(each))
-        print(coords)
-        n = 0
-        for item in coords:
-            n += len(item) // 2 # кол-во вершин
-            #print(n)
-            for i in range(0, len(item), 2):
-                tuple_coords.append([item[i], item[i+1]])
+            box_coords.append(self.canvas.bbox(each))
+            tuple_coords.append(self.canvas.coords(each))
+        print(box_coords)
+        n = 3
+        new_coords = []
+        rotator = Figure(self.canvas)
+        for item in box_coords:
+            x1 = item[0]
+            y1 = item[1]
+            x2 = item[2]
+            y2 = item[3]
+            new_coords.append(rotator.get_n_angles_coords(x1, y1, x2, y2, n, angle))
+        print(new_coords)
         print(tuple_coords)
+
+        for figure in movable_figures:
+            self.canvas.coords(figure,
+                               [new_coords[movable_figures.index(figure)][0],
+                                new_coords[movable_figures.index(figure)][1],
+                                new_coords[movable_figures.index(figure)][2],
+                                new_coords[movable_figures.index(figure)][3]])
+
         #print(list(map(lambda x1, y1, x2, y2: get_n_angles_coords(x1, y1, x2, y2, n, angle), item)))
         '''for i in range(n-1):
             a = (item[i + 2] - item[i*2]) / 2.0 # a = (x2 - x1) / 2.0
@@ -318,18 +331,18 @@ class Objects(Frame):
                 y = (y1 * math.cos(rotation)) - (x1 * math.sin(rotation))
                 point_list.append(round(x + xc))
                 point_list.append(round(y + yc))'''
-        for i in range(len(tuple_coords)-1):
+
+        '''for i in range(len(tuple_coords)-1):
             for z in range(2):
                 a = (tuple_coords[i+1][0] - tuple_coords[i][0]) / 2.0
                 b = (tuple_coords[i+1][1] - tuple_coords[i][1]) / 2.0
                 xc = tuple_coords[i][0] + a
                 yc = tuple_coords[i][1] + b
-                tuple_coords[i][]
+                tuple_coords[i][]'''
 
 
 
 
-        print(coords)
 
     def centerWindow(self):
         w = 880
