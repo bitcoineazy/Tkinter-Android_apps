@@ -66,6 +66,10 @@ class Figure:
             self.canvas.move(each, 10, 0)
         self.canvas.after(10, self.create_hexagons)
 
+    def create_custom(self, n, angle):
+        self.canvas.create_polygon(
+            self.get_n_angles_coords(self.x1, self.y1, self.x2, self.y2, n, angle))
+
     def create_n(self, n, angle):
         while not self.ovals_generated:
             for i in range(1000):
@@ -299,10 +303,17 @@ class Objects(Frame):
     def rotating(self, figure, *args):
         self.canvas.coords(figure, [float(x) for x in args[0]])
 
-    def operations(self):  #окно с операциями из 5,8 заданий
+    def operations(self):  #Окно с операциями из 5,8 заданий
         self.operations_window = Toplevel(self)
         count_area = Button(self.operations_window, text='Площадь', command=self.count_area, width=16)
+        custom_figure = Button(self.operations_window, text='Фигура', command=self.custom_figure, width=8)
         count_area.grid(column=0, row=0)
+        custom_figure.grid(row=0, column=5)
+
+    def custom_figure(self):
+        n, angle = self.n_angle.get().split(',')
+        figure = Figure(self.canvas, x1=400, y1=400, x2=450, y2=450)
+        figure.create_custom(int(n), int(angle))
 
     def get_figures(self):
         all_figures = self.canvas.find_all()
@@ -310,16 +321,26 @@ class Objects(Frame):
         real_coords = []
         for each in movable_figures:
             real_coords.append(self.canvas.coords(each))
-        return real_coords
+        #print(real_coords)
+        tuple_coords = []
+        buff = []
+        for item in real_coords:
+            for i in range(len(item) // 2):
+                buff.append([item[i], item[i+1]])
+            tuple_coords.append(buff)
+            buff = []
+        #print('tt', tuple_coords)
+        return tuple_coords
 
     def count_area(self):
-        all_figures = self.canvas.find_all()
-        movable_figures = list(set(all_figures) - set(self.canvas_grid))
-        figure = movable_figures[0]
+        movable_figures_coords = self.get_figures()
+        figure_coords = movable_figures_coords[500]
         answer = Text(self.operations_window)
-
-        answer.insert(1.0, figure)
-        print(figure)
+        area = self.area(figure_coords)
+        answer.insert(1.0, f'Площадь фигуры: {area}')
+        answer.grid(row=1, column=3)
+        print(figure_coords)
+        print(f'Area: {area}')
 
     def summ(self,cord=None): # 5 проверка на выпуклость
         if cord is None: cord = self.cord # список в котором парами стоят координаты
@@ -329,12 +350,11 @@ class Objects(Frame):
             else:
                 return 1  # выпуклый
 
-    def area(self,cord=None): # площадь
-        all_figures = self.canvas.find_all()
-        movable_figures = list(set(all_figures) - set(self.canvas_grid))
-        if cord is None: cord = self.cord
+    def area(self,cord): # площадь
+        #if cord is None: cord = self.cord
+        #cord = [[-13527, 250], [250, -13542], [-13542, 330]]
         sm = 0
-        for i in range(len(movable_figures)):
+        for i in range(len(cord)):
             sm += cord[i][0]*cord[(i+1)%len(cord)][1]-cord[i][1]*cord[(i+1)%len(cord)][0]
         return abs(sm)/2
 
