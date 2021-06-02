@@ -2,8 +2,6 @@ from tkinter import *
 import math
 
 
-
-
 class Figure:
     def __init__(self, canvas, **coords):
         self.__dict__.update(coords)
@@ -192,6 +190,7 @@ class Objects(Frame):
         strips_1 = Button(self, text='4.1', command=self.make_strips, width=2)
         strips_2 = Button(self, text='4.2', command=self.make_overlapping, width=2)
         symmetric = Button(self, text='4.3', command=self.make_symmetric, width=2)
+        operations = Button(self, text='Операции', command=self.operations, width=16)
         strips_1.grid(row=1, column=3, sticky='w')
         strips_2.grid(row=1, column=3)
         symmetric.grid(row=1, column=3, sticky='e')
@@ -209,6 +208,7 @@ class Objects(Frame):
         self.rotating_angle.grid(row=2, column=0)
         self.deltaxy.grid(row=2, column=1)
         self.n_angle.grid(row=2, column=4)
+        operations.grid(row=1, column=2)
 
     def make_canvas(self):
         self.canvas_window = Toplevel(self)
@@ -299,9 +299,27 @@ class Objects(Frame):
     def rotating(self, figure, *args):
         self.canvas.coords(figure, [float(x) for x in args[0]])
 
-    def count_area(self, figure):
+    def operations(self):  #окно с операциями из 5,8 заданий
+        self.operations_window = Toplevel(self)
+        count_area = Button(self.operations_window, text='Площадь', command=self.count_area, width=16)
+        count_area.grid(column=0, row=0)
+
+    def get_figures(self):
         all_figures = self.canvas.find_all()
         movable_figures = list(set(all_figures) - set(self.canvas_grid))
+        real_coords = []
+        for each in movable_figures:
+            real_coords.append(self.canvas.coords(each))
+        return real_coords
+
+    def count_area(self):
+        all_figures = self.canvas.find_all()
+        movable_figures = list(set(all_figures) - set(self.canvas_grid))
+        figure = movable_figures[0]
+        answer = Text(self.operations_window)
+
+        answer.insert(1.0, figure)
+        print(figure)
 
     def summ(self,cord=None): # 5 проверка на выпуклость
         if cord is None: cord = self.cord # список в котором парами стоят координаты
