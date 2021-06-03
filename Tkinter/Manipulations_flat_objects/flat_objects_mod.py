@@ -1,5 +1,6 @@
 from tkinter import *
 import math
+import random
 
 
 class Figure:
@@ -69,8 +70,14 @@ class Figure:
         self.canvas.after(10, self.create_hexagons)
 
     def create_custom(self, n, angle):
-        self.canvas.create_polygon(
-            self.get_n_angles_coords(self.x1, self.y1, self.x2, self.y2, n, angle))
+        de = ("%02x" % random.randint(0, 255))
+        re = ("%02x" % random.randint(0, 255))
+        we = ("%02x" % random.randint(0, 255))
+        ge = "#"
+        random_color = ge + de + re + we
+        self.canvas.scale(self.canvas.create_polygon(
+            self.get_n_angles_coords(self.x1, self.y1, self.x2, self.y2, n, angle), fill=random_color), self.x1+15, self.y1+15, random.randint(1, 6), random.randint(1, 6))
+
 
     def create_n(self, n, angle):
         while not self.ovals_generated:
@@ -325,9 +332,19 @@ class Objects(Frame):
         count_area = Button(self.operations_window, text='Площадь', command=self.count_area, width=16)
         custom_figure = Button(self.operations_window, text='Фигура', command=self.custom_figure, width=8)
         resize = Button(self.operations_window, text='Размер', command=self.resize, width=16)
-        count_area.grid(column=0, row=0)
-        custom_figure.grid(row=0, column=5)
-        resize.grid(row=0, column=4)
+        ang = Button(self.operations_window, text='Ближайшая вершина', command=self.ang, width=16)
+        min_edge = Button(self.operations_window, text='Минимальное ребро', command=self.long_s, width=16)
+        perimeter = Button(self.operations_window, text='Периметр', command=self.perimeter, width=16)
+        min_area = Button(self.operations_window, text='Минимальная S', command=self.min_ar, width=16)
+        count_area.grid(row=0, column=5)
+        custom_figure.grid(row=0, column=0)
+        resize.grid(row=0, column=1)
+        ang.grid(row=0,column=2, sticky='w')
+        min_edge.grid(row=0, column=3, sticky='w')
+        perimeter.grid(row=0, column=4, sticky='w')
+        min_area.grid(row=1, column=5)
+        self.answer = Text(self.operations_window, width=50, height=4)
+        self.answer.grid(row=1, column=0)
 
     def resize(self): # Изменить размер
         all_figures = self.canvas.find_all()
@@ -337,7 +354,11 @@ class Objects(Frame):
 
     def custom_figure(self):
         n, angle = self.n_angle.get().split(',')
-        figure = Figure(self.canvas, x1=400, y1=400, x2=450, y2=450)
+        x1 = random.randint(100, 600)
+        y1 = x1
+        x2 = x1 + 30
+        y2 = x2
+        figure = Figure(self.canvas, x1=x1, y1=y1, x2=x2, y2=y2)
         figure.create_custom(int(n), int(angle))
 
     def get_figures(self):
@@ -357,11 +378,11 @@ class Objects(Frame):
 
     def count_area(self):
         movable_figures_coords = self.get_figures()
-        figure_coords = movable_figures_coords[500]
-        answer = Text(self.operations_window)
+        figure_coords = movable_figures_coords[0]
+
         area = self.area(figure_coords)
-        answer.insert(1.0, f'Площадь фигуры: {area}')
-        answer.grid(row=1, column=3)
+        self.answer.delete(0.0, END)
+        self.answer.insert(1.0, f'Площадь фигуры: {area}')
         print(figure_coords)
         print(f'Area: {area}')
 
@@ -376,47 +397,68 @@ class Objects(Frame):
     def area(self,cord): # площадь
         #if cord is None: cord = self.cord
         #cord = [[-13527, 250], [250, -13542], [-13542, 330]]
+        print(cord)
         sm = 0
         for i in range(len(cord)):
             sm += cord[i][0]*cord[(i+1)%len(cord)][1]-cord[i][1]*cord[(i+1)%len(cord)][0]
         return abs(sm)/2
 
-    def ang(self,cord=None): # возвращает ближ к началу координат вершину
-        if cord is None: cord = self.cord
+    def ang(self): # возвращает ближ к началу координат вершину
+        movable_figures_coords = self.get_figures()
+        cord = movable_figures_coords[0]
         lm = None
         coord = ()
         for i in cord:
             if lm is None or lm>((i[0]-375)**2+(i[1]-375)**2)**0.5:
                 lm = ((i[0]-375)**2+(i[1]-375)**2)**0.5
                 coord = i
-        return coord
+        self.answer.delete(0.0, END)
+        self.answer.insert(1.0, f'Ближ к началу координат вершина: {coord}')
+        #return coord
 
-    def long_s(self,cord=None): # находит ребро с минимальной длиной
-        if cord is None: cord = self.cord
+    def long_s(self): # находит ребро с минимальной длиной
+        movable_figures_coords = self.get_figures()
+        cord = movable_figures_coords[0]
         lm = None
         coord = None
         for i in range(len(cord)):
             if lm is None or lm < ((cord[(i+1)%len(cord)][0]-cord[i][0]) ** 2 + (cord[(i+1)%len(cord)][1]-cord[i][1]) ** 2) ** 0.5:
                 lm = ((cord[(i+1)%len(cord)][0]-cord[i][0]) ** 2 + (cord[(i+1)%len(cord)][1]-cord[i][1]) ** 2) ** 0.5
                 coord = (cord[i],cord[(i+1)%len(cord)])
-        return coord,round(lm,3) # возвращает точки ребра и длину этого ребра
+        self.answer.delete(0.0, END)
+        self.answer.insert(1.0, f'Точки ребра с минимальной длиной: {coord}, \n'
+                                f'Длина этого ребра: {round(lm, 3)}')
+        #return coord,round(lm,3) # возвращает точки ребра и длину этого ребра
 
-    def perm(self,cord=None): # находит периметр
-        if cord is None: cord = self.cord
+    def perimeter(self): # находит периметр
+        movable_figures_coords = self.get_figures()
+        cord = movable_figures_coords[0]
         pr = 0
         for i in range(len(cord)):
             pr += ((cord[(i+1)%len(cord)][0]-cord[i][0]) ** 2 + (cord[(i+1)%len(cord)][1]-cord[i][1]) ** 2) ** 0.5
-        return round(pr,2) # возвращает периметр
+        self.answer.delete(0.0, END)
+        self.answer.insert(1.0, f'Периметр фигуры ({len(movable_figures_coords[0])}-угольника): {round(pr, 2)}')
+        #return round(pr,2) # возвращает периметр
 
-    def min_ar(self,coord=None): # находит многоульник с минимальной площадью
-        if coord is None: coord = [self.cord]
+    def min_ar(self): # находит многоульник с минимальной площадью
+        movable_figures_coords = self.get_figures()
+        coord = movable_figures_coords # список со всеми фигурами(подсписками)
         sm = None
         fg = None
+        all_figures = self.canvas.find_all()
+        movable_figures = list(set(all_figures) - set(self.canvas_grid))
+        min_index = []
         for i in coord:
             if sm is None or sm < self.area(i):
                 sm = self.area(i)
                 fg = i
-        return round(sm,2), fg # минимальная площадь и координаты фигуры
+
+        figure = movable_figures[movable_figures_coords.index(fg)]
+        self.canvas.itemconfigure(figure, fill='white')
+        self.answer.delete(0.0, END)
+        self.answer.insert(1.0, f'Координаты фигуры с минимальной площадью: {fg} \n'
+                                f'Минимальная площадь: {round(sm, 2)}')
+        #return round(sm,2), fg # минимальная площадь и координаты фигуры
 
     def incl_p(self,A,P=None):
         if P is None: P = self.cord
