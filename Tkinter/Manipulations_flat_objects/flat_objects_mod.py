@@ -335,14 +335,14 @@ class Objects(Frame):
         ang = Button(self.operations_window, text='Ближайшая вершина', command=self.ang, width=16)
         min_edge = Button(self.operations_window, text='Минимальное ребро', command=self.long_s, width=16)
         perimeter = Button(self.operations_window, text='Периметр', command=self.perimeter, width=16)
-        min_area = Button(self.operations_window, text='Минимальная S', command=self.min_ar, width=16)
+        max_area = Button(self.operations_window, text='Максимальная S', command=self.max_ar, width=16)
         count_area.grid(row=0, column=5)
         custom_figure.grid(row=0, column=0)
         resize.grid(row=0, column=1)
         ang.grid(row=0,column=2, sticky='w')
         min_edge.grid(row=0, column=3, sticky='w')
         perimeter.grid(row=0, column=4, sticky='w')
-        min_area.grid(row=1, column=5)
+        max_area.grid(row=1, column=5)
         self.answer = Text(self.operations_window, width=50, height=4)
         self.answer.grid(row=1, column=0)
 
@@ -383,8 +383,8 @@ class Objects(Frame):
         area = self.area(figure_coords)
         self.answer.delete(0.0, END)
         self.answer.insert(1.0, f'Площадь фигуры: {area}')
-        print(figure_coords)
-        print(f'Area: {area}')
+        #print(figure_coords)
+        #print(f'Area: {area}')
 
     def summ(self,cord=None): # 5 проверка на выпуклость
         if cord is None: cord = self.cord # список в котором парами стоят координаты
@@ -397,7 +397,7 @@ class Objects(Frame):
     def area(self,cord): # площадь
         #if cord is None: cord = self.cord
         #cord = [[-13527, 250], [250, -13542], [-13542, 330]]
-        print(cord)
+        #print(cord)
         sm = 0
         for i in range(len(cord)):
             sm += cord[i][0]*cord[(i+1)%len(cord)][1]-cord[i][1]*cord[(i+1)%len(cord)][0]
@@ -440,24 +440,25 @@ class Objects(Frame):
         self.answer.insert(1.0, f'Периметр фигуры ({len(movable_figures_coords[0])}-угольника): {round(pr, 2)}')
         #return round(pr,2) # возвращает периметр
 
-    def min_ar(self): # находит многоульник с минимальной площадью
+    def max_ar(self): # находит многоульник с макс площадью
         movable_figures_coords = self.get_figures()
         coord = movable_figures_coords # список со всеми фигурами(подсписками)
         sm = None
         fg = None
         all_figures = self.canvas.find_all()
         movable_figures = list(set(all_figures) - set(self.canvas_grid))
-        min_index = []
         for i in coord:
             if sm is None or sm < self.area(i):
                 sm = self.area(i)
                 fg = i
-
+        # получаем тэг фигуры для манипуляций с помощью индекса координат(фигуры с макс пл)
         figure = movable_figures[movable_figures_coords.index(fg)]
-        self.canvas.itemconfigure(figure, fill='white')
+        self.canvas.create_line(fg[0], fg[-1], fill='black')
+        self.canvas.itemconfigure(figure, fill='black') # покрасить фигуру с макс пл в черный
+        self.canvas.tag_raise(figure) # поднять фигуру с макс площадью на передний план
         self.answer.delete(0.0, END)
-        self.answer.insert(1.0, f'Координаты фигуры с минимальной площадью: {fg} \n'
-                                f'Минимальная площадь: {round(sm, 2)}')
+        self.answer.insert(1.0, f'Координаты фигуры с макс площадью: {fg} \n'
+                                f'Макс площадь: {round(sm, 2)}')
         #return round(sm,2), fg # минимальная площадь и координаты фигуры
 
     def incl_p(self,A,P=None):
@@ -491,18 +492,6 @@ class Objects(Frame):
         x = (sw - w) / 2
         y = (sh - h) / 2
         self.parent.geometry('%dx%d+%d+%d' % (w, h, x, y))
-
-
-class Cord:
-    def __init__(self,*args,**kwargs):
-        self.cord = []
-        self.n = 0
-        for i in kwargs:
-            self.cord.append(i)
-            self.n+=1
-        for i in args:
-            self.cord.append(i)
-            self.n+=1
 
 
 def main():
