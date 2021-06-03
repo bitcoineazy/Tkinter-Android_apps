@@ -336,6 +336,12 @@ class Objects(Frame):
         min_edge = Button(self.operations_window, text='Минимальное ребро', command=self.long_s, width=16)
         perimeter = Button(self.operations_window, text='Периметр', command=self.perimeter, width=16)
         max_area = Button(self.operations_window, text='Максимальная S', command=self.max_ar, width=16)
+        area_filtration = Button(self.operations_window, text='Фильтрация площади', command=self.area_filter, width=16)
+        min_len_filter = Button(self.operations_window, text='Фил по мин ребру', command=self.min_len_filter, width=16)
+        find_location_angle = Button(self.operations_window, text='Фил по вхож в коорд', command=self.find_angle_location, width=16)
+        self.min_len_filter_count = Entry(self.operations_window, width=16)
+        self.area_filter_count = Entry(self.operations_window, width=16)
+        self.find_location = Entry(self.operations_window, width=16)
         count_area.grid(row=0, column=5)
         custom_figure.grid(row=0, column=0)
         resize.grid(row=0, column=1)
@@ -343,6 +349,12 @@ class Objects(Frame):
         min_edge.grid(row=0, column=3, sticky='w')
         perimeter.grid(row=0, column=4, sticky='w')
         max_area.grid(row=1, column=5)
+        area_filtration.grid(row=1, column=1)
+        min_len_filter.grid(row=1, column=2)
+        find_location_angle.grid(row=1, column=3)
+        self.area_filter_count.grid(row=2, column=1)
+        self.min_len_filter_count.grid(row=2, column=2)
+        self.find_location.grid(row=2, column=3)
         self.answer = Text(self.operations_window, width=50, height=4)
         self.answer.grid(row=1, column=0)
 
@@ -351,6 +363,45 @@ class Objects(Frame):
         movable_figures = list(set(all_figures) - set(self.canvas_grid))
         for each in movable_figures:
             self.canvas.scale(each, 375, 375, 1.2, 1.2)
+
+    def area_filter(self):
+        all_figures = self.canvas.find_all()
+        movable_figures = list(set(all_figures) - set(self.canvas_grid))
+        movable_figures_coords = self.get_figures()
+        areas = []
+        areas_indexes = []
+        for each in movable_figures_coords:
+            if self.area(each) < float(self.area_filter_count.get()):
+                areas_indexes.append(movable_figures_coords.index(each))
+        for each in areas:
+            if each < int(self.area_filter_count.get()):
+                areas_indexes.append(areas.index(each))
+        for i in areas_indexes:
+            self.canvas.delete(movable_figures[i])
+
+    def min_len_filter(self):
+        all_figures = self.canvas.find_all()
+        movable_figures = list(set(all_figures) - set(self.canvas_grid))
+        movable_figures_coords = self.get_figures()
+        areas = []
+        min_indexes = []
+        for each in movable_figures_coords:
+            if self.long_s_py(each)[1] < int(self.min_len_filter_count.get()):
+                min_indexes.append(movable_figures_coords.index(each))
+        for i in min_indexes:
+            self.canvas.delete(movable_figures[i])
+
+    def find_angle_location(self):
+        all_figures = self.canvas.find_all()
+        movable_figures = list(set(all_figures) - set(self.canvas_grid))
+        movable_figures_coords = self.get_figures()
+        location_indexes = []
+        location = self.find_location.get().split(',')
+        for each in movable_figures_coords:
+            if location in self.canvas.coords(each):
+                location_indexes.append(movable_figures_coords.index(each))
+        for i in location_indexes:
+            self.canvas.delete(movable_figures[i])
 
     def custom_figure(self):
         n, angle = self.n_angle.get().split(',')
@@ -430,6 +481,16 @@ class Objects(Frame):
                                 f'Длина этого ребра: {round(lm, 3)}')
         #return coord,round(lm,3) # возвращает точки ребра и длину этого ребра
 
+    def long_s_py(self, cord): # находит ребро с минимальной длиной
+        lm = None
+        coord = None
+        for i in range(len(cord)):
+            if lm is None or lm < ((cord[(i+1)%len(cord)][0]-cord[i][0]) ** 2 + (cord[(i+1)%len(cord)][1]-cord[i][1]) ** 2) ** 0.5:
+                lm = ((cord[(i+1)%len(cord)][0]-cord[i][0]) ** 2 + (cord[(i+1)%len(cord)][1]-cord[i][1]) ** 2) ** 0.5
+                coord = (cord[i],cord[(i+1)%len(cord)])
+
+        return cord, round(lm,3) # возвращает точки ребра и длину этого ребра
+
     def perimeter(self): # находит периметр
         movable_figures_coords = self.get_figures()
         cord = movable_figures_coords[0]
@@ -459,7 +520,7 @@ class Objects(Frame):
         self.answer.delete(0.0, END)
         self.answer.insert(1.0, f'Координаты фигуры с макс площадью: {fg} \n'
                                 f'Макс площадь: {round(sm, 2)}')
-        #return round(sm,2), fg # минимальная площадь и координаты фигуры
+        #return round(sm,2), fg # максимальная площадь и координаты фигуры
 
     def incl_p(self,A,P=None):
         if P is None: P = self.cord
