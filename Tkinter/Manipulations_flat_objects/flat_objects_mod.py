@@ -15,12 +15,14 @@ class Figure:
         self.overlapping_2 = []
         self.symmetric_1 = []
         self.symmetric_2 = []
+        self.thy = []
         self.rectangles_generated = False
         self.triangles_generated = False
         self.hexagons_generated = False
         self.ovals_generated = False
         self.overlapping_generated = False
         self.symmetric_generated = False
+        self.thy_generated = False
 
     def create_rectangles(self):
         while not self.rectangles_generated:
@@ -168,6 +170,15 @@ class Figure:
             self.canvas.move(each, 7, 0)
         self.canvas.after(10, self.create_symmetric)
 
+    def create_thy(self): # 4.4
+        while not self.thy_generated:
+            for i in range(10):
+                for z in range(10):
+                    self.thy.append(self.canvas.create_rectangle(375, 375, 375 + (i*20), 375 + (z*30), fill='black'))
+                    self.thy.append(self.canvas.create_rectangle(375, 375, 375 - (i*20), 375 - (z*30), fill='white'))
+            self.thy_generated = True
+        self.canvas.after(10, self.create_thy)
+
 
 class Objects(Frame):
     def __init__(self, parent):
@@ -194,10 +205,12 @@ class Objects(Frame):
         strips_1 = Button(self, text='4.1', command=self.make_strips, width=2)
         strips_2 = Button(self, text='4.2', command=self.make_overlapping, width=2)
         symmetric = Button(self, text='4.3', command=self.make_symmetric, width=2)
+        homotethy = Button(self, text='4.4', command=self.make_thy, width=2)
         operations = Button(self, text='Операции', command=self.operations, width=16)
         strips_1.grid(row=1, column=3, sticky='w')
         strips_2.grid(row=1, column=3)
         symmetric.grid(row=1, column=3, sticky='e')
+        homotethy.grid(row=2, column=3)
         self.rotating_angle = Entry(self, width=16)
         moving = Button(self, text='move()', command=self.move, width=16)
         self.deltaxy = Entry(self, width=16)
@@ -265,6 +278,10 @@ class Objects(Frame):
         symmetric = Figure(self.canvas, x1=400, y1=400, x2=430, y2=430)
         symmetric.create_symmetric()
 
+    def make_thy(self): # 4.4
+        thy = Figure(self.canvas, x1=375, y1=375, x2=400, y2=400)
+        thy.create_thy()
+
     def move(self):
         """Параллельный перенос"""
         deltax, deltay = self.deltaxy.get().split(',')
@@ -303,12 +320,20 @@ class Objects(Frame):
     def rotating(self, figure, *args):
         self.canvas.coords(figure, [float(x) for x in args[0]])
 
-    def operations(self):  #Окно с операциями из 5,8 заданий
+    def operations(self):  # Окно с операциями из 5,8 заданий
         self.operations_window = Toplevel(self)
         count_area = Button(self.operations_window, text='Площадь', command=self.count_area, width=16)
         custom_figure = Button(self.operations_window, text='Фигура', command=self.custom_figure, width=8)
+        resize = Button(self.operations_window, text='Размер', command=self.resize, width=16)
         count_area.grid(column=0, row=0)
         custom_figure.grid(row=0, column=5)
+        resize.grid(row=0, column=4)
+
+    def resize(self): # Изменить размер
+        all_figures = self.canvas.find_all()
+        movable_figures = list(set(all_figures) - set(self.canvas_grid))
+        for each in movable_figures:
+            self.canvas.scale(each, 375, 375, 1.2, 1.2)
 
     def custom_figure(self):
         n, angle = self.n_angle.get().split(',')
@@ -321,7 +346,6 @@ class Objects(Frame):
         real_coords = []
         for each in movable_figures:
             real_coords.append(self.canvas.coords(each))
-        #print(real_coords)
         tuple_coords = []
         buff = []
         for item in real_coords:
@@ -329,7 +353,6 @@ class Objects(Frame):
                 buff.append([item[i], item[i+1]])
             tuple_coords.append(buff)
             buff = []
-        #print('tt', tuple_coords)
         return tuple_coords
 
     def count_area(self):
