@@ -1,3 +1,3 @@
-# Tkinter_apps
+# Tkinter_Pygame Python
 
-- Репозиторий для Tkinter проектов  
+- Репозиторий для Tkinter & Pygame проектов 
